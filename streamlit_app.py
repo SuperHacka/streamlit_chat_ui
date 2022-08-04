@@ -1,6 +1,7 @@
 import streamlit as st
 
 import chatbot_test
+import training_page
 
 
 def run():
@@ -9,6 +10,7 @@ def run():
     # noinspection PyPep8Naming
     PAGES = {
         "Streamlit-Chat": chatbot_test,
+        "Training Page": training_page,
     }
     st.sidebar.title('Navigation')
 
