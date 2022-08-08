@@ -15,10 +15,13 @@ example_table = pd.DataFrame(example_dict)
 def app():
     # example_image = Image.open("01.png")
     # example_image = np.array(example_image)
+
     if "history" not in st.session_state:
         st.session_state.history = []
     if "input_text" not in st.session_state:
         st.session_state.input_text = " "
+    if "texter" not in st.session_state:
+        st.session_state.texter = " "
     # with st.container():
     st.title("Streamlit-Chat interface")
     if len(st.session_state.history) == 0:
@@ -59,11 +62,15 @@ def app():
     # texter = cola.text_input(label="", key="input_text",
     #                          placeholder="Type something to command the chatbot", on_change=generate_answer)
 
-    texter = cola.text_input(label="", key="input_text",
-                             placeholder="Type something to command the chatbot")
+    st.session_state.texter = cola.text_input(label="", key="input_text",
+                                              placeholder="Type something to command the chatbot")
 
-    if len(texter) != 0:
-        generate_answer(texter)
+    # if len(texter) != 0:
+    #     generate_answer(texter)
+
+    if st.session_state.texter is not None:
+        generate_answer(st.session_state.texter)
+
     colb.markdown("##")
 
     send_message_button = colb.button(" \U0001F4AC ")
@@ -75,7 +82,7 @@ def app():
 
     suggestion_button = st.button("Some suggestion answer")
     if suggestion_button:
-        user_response = "howdy ho!"
+        user_response = "This is the generated answer"
         # user_message = user_response[:]
         generate_answer(user_response)
         # st.session_state.input_text = user_response[:]
@@ -98,7 +105,7 @@ def generate_answer(texter):
     default_message = "default response"
     # tokenizer, model = get_models()
     # user_message = st.session_state.input_text
-    user_message = texter
+    user_message = st.session_state.texter
     bot_message = default_message[:]
     # inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
     # result = model.generate(**inputs)
@@ -151,6 +158,10 @@ def generate_answer(texter):
 
     elif "document" in user_message:
         pass
+    elif "other" in user_message:
+        st.button("Selection A")
+        st.button("Selection B")
+        st.button("Selection C")
     else:
         bot_response = "Sorry could not quite get the message"
         bot_message = bot_response[:]
