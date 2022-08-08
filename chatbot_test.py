@@ -64,7 +64,8 @@ def app():
     suggestion_button = st.button("Some suggestion answer")
     if suggestion_button:
         user_response = "howdy ho!"
-        st.text_input(label="", key="input_text", value=user_response)
+        user_message = user_response[:]
+        # st.text_input(label="", key="input_text", value=user_response)
 
 
 # @st.experimental_singleton  # not implementing model atm just testing chat ui
@@ -78,6 +79,7 @@ def app():
 
 
 def generate_answer():
+    pizza_response = ""
     default_message = "default response"
     # tokenizer, model = get_models()
     user_message = st.session_state.input_text
@@ -91,6 +93,7 @@ def generate_answer():
     # if suggestion_button:
     #     user_response = "howdy ho!"
     #     user_message = user_response[:]
+
     if "yo" in user_message:
         chat_suggest = st.button(label="Chat suggestions")
         if chat_suggest:
@@ -104,23 +107,32 @@ def generate_answer():
         bot_message = bot_response[:]
 
     elif "hungry" in user_message:
-        bot_response = "Here grab a kitkat"
+        bot_response = "Here grab a kitkat, do you want to order from our selection? ()"
         bot_message = bot_response[:]
+        # if "order" in bot_response:
+        #     sub_response = "Selections are: Pizza, Drinks"
+        #     bot_message = sub_response[:]
 
     elif "pizza" in user_message:
         bot_response = "What flavour"
         bot_message = bot_response[:]
 
-    if "chicken" in user_message:
-        bot_response = "We will deliver to you shortly"
-        bot_message = bot_response[:]
+        # last user message is not able to be capture
+        if "chicken" in user_message:
+            bot_response = "coming right up"
+            bot_message = bot_response[:]
 
+    else:
+        bot_response = "Sorry could not quite get the message"
+        bot_message = bot_response[:]
     # if "help" in bot_message:
     #     user_response = "Thanks for the info"  # does not work as intended
     #     user_message = user_response[:]
 
     # order of message appearing in the chat interface, from user followed by bot
-    st.session_state.history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+    st.session_state.history.append(
+        {"message": user_message, "is_user": True, "avatar_style": "female",
+         "key": random.randint(0, 1000)})
     st.session_state.history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
 
 
