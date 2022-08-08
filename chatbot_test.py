@@ -1,24 +1,26 @@
-import os
 import random
 
+import pandas as pd
 import streamlit as st
 from PIL import Image
 from streamlit_chat import message as st_message
 
 chat_container = st.container()
+example_image = Image.open("01.png")
+example_dict = {"id": [1, 2, 3, 4],
+                "value": ["This row contains example data", "Second row", "Third row", "Fourth row"]}
+example_table = pd.DataFrame(example_dict)
 
 
 def app():
-    example_image = Image.open("01.png")
+    # example_image = Image.open("01.png")
     # example_image = np.array(example_image)
-    img = os.path.abspath("01.png")
     if "history" not in st.session_state:
         st.session_state.history = []
     if "input_text" not in st.session_state:
         st.session_state.input_text = " "
     # with st.container():
     st.title("Streamlit-Chat interface")
-
     if len(st.session_state.history) == 0:
         st_message(
             message="Hello there welcome to the chatbot interface testing, Please type something to continue")
@@ -26,7 +28,11 @@ def app():
     for chat in st.session_state.history:
         st_message(**chat)  # unpacking
 
-    col1, col2, col3 = st.columns((0.5, 0.6, 1))
+    ccol1, ccol2 = st.columns((0.06, 1))
+    ccol1.button(" \U0001F44D ", key=random.randint(0, 1000))
+    ccol2.button(" \U0001F44E ", key=random.randint(0, 1000))
+
+    col1, col2, col3 = st.columns((0.319, 0.6, 1))
 
     url_button = col1.button(
         "Display URL")
@@ -50,8 +56,14 @@ def app():
 
     cola, colb, colc = st.columns((1, 0.1, 0.2))
 
-    texter = cola.text_input(label="", key="input_text", on_change=generate_answer,
+    # texter = cola.text_input(label="", key="input_text",
+    #                          placeholder="Type something to command the chatbot", on_change=generate_answer)
+
+    texter = cola.text_input(label="", key="input_text",
                              placeholder="Type something to command the chatbot")
+
+    if len(texter) != 0:
+        generate_answer(texter)
     colb.markdown("##")
 
     send_message_button = colb.button(" \U0001F4AC ")
@@ -64,7 +76,10 @@ def app():
     suggestion_button = st.button("Some suggestion answer")
     if suggestion_button:
         user_response = "howdy ho!"
-        user_message = user_response[:]
+        # user_message = user_response[:]
+        generate_answer(user_response)
+        # st.session_state.input_text = user_response[:]
+
         # st.text_input(label="", key="input_text", value=user_response)
 
 
@@ -78,11 +93,12 @@ def app():
 #     return tokenizer, model
 
 
-def generate_answer():
+def generate_answer(texter):
     pizza_response = ""
     default_message = "default response"
     # tokenizer, model = get_models()
-    user_message = st.session_state.input_text
+    # user_message = st.session_state.input_text
+    user_message = texter
     bot_message = default_message[:]
     # inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
     # result = model.generate(**inputs)
@@ -122,6 +138,19 @@ def generate_answer():
             bot_response = "coming right up"
             bot_message = bot_response[:]
 
+    elif "image" in user_message:
+        bot_response = "Here is the example image"
+        bot_message = bot_response[:]
+        st.image(example_image)  # will be displayed outside the chat box and disappear after widget key change
+        st.button("Image example button")
+
+    elif "table" in user_message:
+        bot_response = "Here is the example table"
+        bot_message = bot_response[:]
+        st.table(example_table)  # will be displayed outside the chat box
+
+    elif "document" in user_message:
+        pass
     else:
         bot_response = "Sorry could not quite get the message"
         bot_message = bot_response[:]
