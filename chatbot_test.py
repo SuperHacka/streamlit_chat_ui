@@ -39,7 +39,7 @@ def app():
     if "input_text" not in st.session_state:
         st.session_state.input_text = " "
     if "texter" not in st.session_state:
-        st.session_state.texter = "Hi"
+        st.session_state.texter = " "
 
     # with st.container():
     st.title("Streamlit-Chat interface")
@@ -86,16 +86,17 @@ def app():
     st.session_state.texter = cola.text_input(label="", key="input_text",
                                               placeholder="Type something to command the chatbot")
 
-    print(f"--> after the initialisation, {st.session_state.texter}")
-
+    print(f"--> after the initialisation, {len(st.session_state.texter.strip())}")
+    #
     if st.session_state.texter is not None and len(st.session_state.texter.strip()) > 0:
         generate_answer(st.session_state.texter, temp_container)
-    # if len(texter) != 0:
-    #     generate_answer(texter)
 
     colb.markdown("##")
 
-    send_message_button = colb.button(" \U0001F4AC ")
+    send_message_button = colb.button(" \U0001F4AC ", on_click=generate_answer,
+                                      args=(st.session_state.texter, temp_container))
+    if send_message_button:
+        st.experimental_rerun()
 
     colc.markdown("##")
     upload_files_button = colc.button(" \U0001F4E4 ")
@@ -105,11 +106,7 @@ def app():
     suggestion_button = st.button("Some suggestion answer")
     if suggestion_button:
         user_response = "This is the generated answer"
-        # user_message = user_response[:]
         generate_answer(user_response, temp_container)
-        # st.session_state.input_text = user_response[:]
-
-        # st.text_input(label="", key="input_text", value=user_response)
 
 
 # @st.experimental_singleton  # not implementing model atm just testing chat ui
@@ -123,7 +120,6 @@ def app():
 
 
 def generate_answer(texter, container):
-    pizza_response = ""
     default_message = "default response"
     # tokenizer, model = get_models()
     # user_message = st.session_state.input_text
@@ -148,27 +144,10 @@ def generate_answer(texter, container):
             bot_message = option[:]
             st.button("What topics are available in this bot knowledge base")
             st.button("How to use this application")
-            print("something")
 
     elif "hi" in user_message:
         bot_response = "Hello there!, do you need help with anything?"
         bot_message = bot_response[:]
-
-    elif "hungry" in user_message:
-        bot_response = "Here grab a kitkat, do you want to order from our selection? (Pizza, Drinks)"
-        bot_message = bot_response[:]
-        # if "order" in bot_response:
-        #     sub_response = "Selections are: Pizza, Drinks"
-        #     bot_message = sub_response[:]
-
-    elif "pizza" in user_message:
-        bot_response = "What flavour"
-        bot_message = bot_response[:]
-
-        # last user message is not able to be capture
-        if "chicken" in user_message:
-            bot_response = "coming right up"
-            bot_message = bot_response[:]
 
     elif "image" in user_message:
         bot_response = "Here is the example image"
@@ -182,6 +161,8 @@ def generate_answer(texter, container):
         container.table(example_table)  # will be displayed outside the chat box
 
     elif "document" in user_message:
+        bot_response = "Here is the pdf document"
+        bot_message = bot_response[:]
         container.markdown(pdf_display, unsafe_allow_html=True)
         container.download_button(label="\U0001F4E5",
                                   data=PDFbyte,
@@ -189,6 +170,8 @@ def generate_answer(texter, container):
                                   mime="application/pdf")
 
     elif "map" in user_message:
+        bot_response = "The map will be shown below"
+        bot_message = bot_response[:]
         container.map(map_df, use_container_width=False)
 
     # Trying expander inside a container
@@ -236,12 +219,14 @@ def generate_answer(texter, container):
             generate_answer(user_response, container)
 
     elif "form" in user_message:
+        bot_response = "Here is the form provided"
+        bot_message = bot_response[:]
         with container.form("Chat Feedback"):
             st.write("Feedback form")
 
             question_1 = st.text_input("What are your comments about the application")
             question_2 = st.text_input("Any additional feedback")
-            # Every form must have a submit button.
+
             submitted = st.form_submit_button("Submit")
             if submitted:
                 st.write("Question 1", question_1, "Question 2", question_2)
