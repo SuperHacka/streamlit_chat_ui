@@ -26,7 +26,8 @@ map_df = pd.DataFrame(
     columns=['lat', 'lon'])
 
 
-# gmaps.configure(api_key='AIzaSyCur_PPMlQlquZqOiT1ZXOYspfuqY9vbFs')
+# gmaps.configure(api_key='AIzaSyCur_PPMlQlquZqOiT1ZXOYspfuqY9vbFs') # not in use currently due to streamlit not
+# supporting gmaps display natively
 
 
 def app():
@@ -233,6 +234,17 @@ def generate_answer(texter, container):
         if choice_3:
             user_response = "Bagaimana kalau kecurian kad pengenalan"
             generate_answer(user_response, container)
+
+    elif "form" in user_message:
+        with container.form("Chat Feedback"):
+            st.write("Feedback form")
+
+            question_1 = st.text_input("What are your comments about the application")
+            question_2 = st.text_input("Any additional feedback")
+            # Every form must have a submit button.
+            submitted = st.form_submit_button("Submit")
+            if submitted:
+                st.write("Question 1", question_1, "Question 2", question_2)
 
     else:
         bot_response = "Sorry could not quite get the message"
