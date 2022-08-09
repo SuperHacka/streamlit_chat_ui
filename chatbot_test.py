@@ -22,7 +22,7 @@ with open(file_path, "rb") as f:
 pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="250" height="200" type="application/pdf"></iframe>'
 
 map_df = pd.DataFrame(
-    np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
+    np.random.randn(1000, 2) / [50, 50] + [87.76, -12.4],
     columns=['lat', 'lon'])
 
 
@@ -47,8 +47,18 @@ def app():
         st_message(
             message="Hello there welcome to the chatbot interface testing, Please type something to continue")
 
+    # TODO   loop inside append chat
     for chat in st.session_state.history:
-        st_message(**chat)  # unpacking
+        if "image" in chat.keys():
+            # st_message(chat["message"], chat["is_user"], chat["avatar_style"], chat["key"], chat["image"])
+            st_message(**chat)
+            st.image(chat["image"])
+
+        elif "map" in chat.keys():
+            st_message(**chat)
+            st.map(chat["map"])
+        else:
+            st_message(**chat)  # unpacking
 
     ccol1, ccol2 = st.columns((0.06, 1))
     ccol1.button(" \U0001F44D ", key=random.randint(0, 1000))
@@ -81,20 +91,19 @@ def app():
 
     # texter = cola.text_input(label="", key="input_text",
     #                          placeholder="Type something to command the chatbot", on_change=generate_answer)
-    print(f"--> before the initialisation, {st.session_state.texter}")
+    # print(f"--> before the initialisation, {st.session_state.texter}")
 
     st.session_state.texter = cola.text_input(label="", key="input_text",
                                               placeholder="Type something to command the chatbot")
 
-    print(f"--> after the initialisation, {len(st.session_state.texter.strip())}")
+    # print(f"--> after the initialisation, {len(st.session_state.texter.strip())}")
     #
     if st.session_state.texter is not None and len(st.session_state.texter.strip()) > 0:
-        generate_answer(st.session_state.texter, temp_container)
+        generate_answer(st.session_state.input_text, temp_container)
 
     colb.markdown("##")
 
-    send_message_button = colb.button(" \U0001F4AC ", on_click=generate_answer,
-                                      args=(st.session_state.texter, temp_container))
+    send_message_button = colb.button(" \U0001F4AC ")
     if send_message_button:
         st.experimental_rerun()
 
@@ -119,11 +128,11 @@ def app():
 #     return tokenizer, model
 
 
-def generate_answer(texter, container):
+def generate_answer(message, container):
     default_message = "default response"
     # tokenizer, model = get_models()
     # user_message = st.session_state.input_text
-    user_message = texter
+    user_message = message
     bot_message = default_message[:]
     # inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
     # result = model.generate(**inputs)
@@ -134,6 +143,11 @@ def generate_answer(texter, container):
     # if suggestion_button:
     #     user_response = "howdy ho!"
     #     user_message = user_response[:]
+
+    # user message dictionary that will be passed into the st_message
+    # st.session_state.history.append(
+    #     {"message": user_message, "is_user": True, "avatar_style": "female",
+    #      "key": random.randint(0, 1000)})
 
     if "help" in user_message:
         bot_response = "Click on the options below"
@@ -148,12 +162,19 @@ def generate_answer(texter, container):
     elif "hi" in user_message:
         bot_response = "Hello there!, do you need help with anything?"
         bot_message = bot_response[:]
+        st.session_state.history.append(
+            {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
 
     elif "image" in user_message:
         bot_response = "Here is the example image"
         bot_message = bot_response[:]
-        container.image(example_image)  # will be displayed outside the chat box and disappear after widget key change
-        st.button("Image example button")
+        # container.image(example_image)  # will be displayed outside the chat box and disappear after widget key change
+        st.session_state.history.append(
+            {"message": user_message, "is_user": True, "avatar_style": "female",
+             "key": random.randint(0, 1000), "image": example_image})
+        st.session_state.history.append(
+            {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000),
+             "image": example_image})
 
     elif "table" in user_message:
         bot_response = "Here is the example table"
@@ -167,24 +188,32 @@ def generate_answer(texter, container):
         container.download_button(label="\U0001F4E5",
                                   data=PDFbyte,
                                   file_name="streamlit_chat_pdf.pdf",
-                                  mime="application/pdf")
+                                  mime="application/x-pdf")
 
     elif "map" in user_message:
         bot_response = "The map will be shown below"
         bot_message = bot_response[:]
-        container.map(map_df, use_container_width=False)
+        # container.map(map_df, use_container_width=False)
+        example_map = st.map(map_df, use_container_width=False)
+        st.session_state.history.append(
+            {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000),
+             "map": example_map})
+
+    elif "video" in user_message:
+        bot_response = "The video will be shown below"
+        bot_message = bot_response[:]
 
     # Trying expander inside a container
     elif "expander" in user_message:
         expander_with_buttons = container.expander(label="Sample Suggestion on an expander")
         with expander_with_buttons:
             st.write("This expander contains lots of buttons")
-            st.button("Button 1")
-            st.button("Button 2")
-            st.button("Button 3")
-            st.button("Button 4")
-            st.button("Button 5")
-            st.button("Button 6")
+            st.button("Suggestion 1")
+            st.button("Suggestion 2")
+            st.button("Suggestion 3")
+            st.button("Suggestion 4")
+            st.button("Suggestion 5")
+            st.button("Suggestion 6")
 
     elif "change" in user_message:
         page = list(training_page.keys())
@@ -229,20 +258,24 @@ def generate_answer(texter, container):
 
             submitted = st.form_submit_button("Submit")
             if submitted:
-                st.write("Question 1", question_1, "Question 2", question_2)
+                st.write("Thanks for you feedback !")
+        st.session_state.history.append(
+            {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
 
     else:
-        bot_response = "Sorry could not quite get the message"
+        bot_response = "Sorry could not quite get the message, could you repeat that again"
         bot_message = bot_response[:]
+        st.session_state.history.append(
+            {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
+
     # if "help" in bot_message:
     #     user_response = "Thanks for the info"  # does not work as intended
     #     user_message = user_response[:]
 
     # order of message appearing in the chat interface, from user followed by bot
-    st.session_state.history.append(
-        {"message": user_message, "is_user": True, "avatar_style": "female",
-         "key": random.randint(0, 1000)})
-    st.session_state.history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    # st.session_state.history.append(
+    #     {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
 
 # css styling for the chat interface that allow scrolling
 # chat_element_style = """
