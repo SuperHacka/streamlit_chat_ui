@@ -11,6 +11,7 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 
+temp_container = st.container()
 example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
                 "value": ["This row contains example data", "Second row", "Third row", "Fourth row"]}
@@ -28,7 +29,7 @@ map_df = pd.DataFrame(
 
 def generate_answer():
     user_message = st.session_state.user_input
-
+    container = st.container()
     if "help" in user_message:
         bot_response = "Click on the options below"
         bot_message = bot_response[:]
@@ -55,7 +56,8 @@ def generate_answer():
         #     {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000),
         #      "image": example_image})
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
-        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "image": example_image})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "image": example_image})
 
     elif "table" in user_message:
         bot_response = "Here is the example table"
@@ -77,7 +79,7 @@ def generate_answer():
         # container.map(map_df, use_container_width=False)
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)
-         , "map": map_df})
+                                                 , "map": map_df})
 
     elif "video" in user_message:
         bot_response = "The video will be shown below"
@@ -87,15 +89,15 @@ def generate_answer():
     elif "expander" in user_message:
         bot_response = "The expander will be shown below"
         bot_message = bot_response[:]
-        # expander_with_buttons = container.expander(label="Sample Suggestion on an expander")
-        # with expander_with_buttons:
-        #     st.write("This expander contains lots of buttons")
-        #     st.button("Suggestion 1")
-        #     st.button("Suggestion 2")
-        #     st.button("Suggestion 3")
-        #     st.button("Suggestion 4")
-        #     st.button("Suggestion 5")
-        #     st.button("Suggestion 6")
+        expander_with_buttons = container.expander(label="Sample Suggestion on an expander")
+        with expander_with_buttons:
+            st.write("This expander contains lots of buttons")
+            st.button("Suggestion 1")
+            st.button("Suggestion 2")
+            st.button("Suggestion 3")
+            st.button("Suggestion 4")
+            st.button("Suggestion 5")
+            st.button("Suggestion 6")
 
     elif "change" in user_message:
         pass
@@ -108,7 +110,11 @@ def generate_answer():
         # container.text_area("Feedback form")
 
     elif "other" in user_message:
-        pass
+        bot_response = "Here are possible interactions with the bot"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": True})
         # container.button("Selection A")
         # container.button("Selection B")
         # container.button("Selection C")
@@ -146,14 +152,12 @@ def generate_answer():
     #     st.session_state.history.append(
     #         {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
     #
-    # else:
-    #     bot_response = "Sorry could not quite get the message, could you repeat that again"
-    #     bot_message = bot_response[:]
-    #     st.session_state.history.append(
-    #         {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
-
-    # st.session_state.chat_history.append({"message": user_message, "is_user": True,"key": random.randint(0, 1000)})
-    # st.session_state.chat_history.append({"message": bot_message, "is_user": False,"key": random.randint(0, 1000)})
+    else:
+        bot_response = "Sorry could not quite get the message, could you repeat that again"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
 
 
 def app():
@@ -163,7 +167,6 @@ def app():
     if "first_time_run" not in st.session_state:
         st.session_state.first_time_run = True
         st.session_state.chat_history = []
-        temp_container = st.container()
 
     if st.session_state.first_time_run is True:
         st.session_state.first_time_run = False
@@ -181,6 +184,13 @@ def app():
         elif "map" in chat.keys():
             st_message(**chat)
             st.map(chat["map"])
+        elif "container" in chat.keys():
+            st_message(**chat)
+            if chat["container"]:
+                temp_container.button("Selection A")
+                temp_container.button("Selection B")
+                temp_container.button("Selection C")
+
         else:
             st_message(**chat)  # unpacking
 
@@ -228,6 +238,3 @@ if __name__ == "__main__":
     app()
     # for chat in st.session_state.chat_history:
     #     st_message(**chat)  # unpacking
-
-
-

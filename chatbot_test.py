@@ -38,8 +38,8 @@ def app():
         st.session_state.history = []
     if "input_text" not in st.session_state:
         st.session_state.input_text = " "
-    if "texter" not in st.session_state:
-        st.session_state.texter = " "
+    # if "texter" not in st.session_state:
+    #     st.session_state.texter = " "
 
     # with st.container():
     st.title("Streamlit-Chat interface")
@@ -94,7 +94,8 @@ def app():
     # print(f"--> before the initialisation, {st.session_state.texter}")
 
     st.session_state.texter = cola.text_input(label="", key="input_text",
-                                              placeholder="Type something to command the chatbot")
+                                              placeholder="Type something to command the chatbot"
+                                              , on_change=generate_answer)
 
     # print(f"--> after the initialisation, {len(st.session_state.texter.strip())}")
     #
