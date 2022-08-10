@@ -9,8 +9,9 @@ def run():
 
     # noinspection PyPep8Naming
     PAGES = {
-        "Streamlit-Chat": chatbot_test,
         "Training Page": training_page,
+        "Streamlit-Chat": chatbot_test,
+
     }
     st.sidebar.title('Navigation')
 
