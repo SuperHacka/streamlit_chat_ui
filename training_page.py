@@ -206,8 +206,8 @@ def app():
             # FIXME button leading to choice does not feeds to the user_input
             if "selection_type_1" in chat["container"]:
                 button_a_key = "button_a" + str(selection_1_cnt)
-                button_b_key = "button_a" + str(selection_1_cnt)
-                button_c_key = "button_a" + str(selection_1_cnt)
+                button_b_key = "button_b" + str(selection_1_cnt)
+                button_c_key = "button_c" + str(selection_1_cnt)
                 button_a = st.button("Selection A", key=button_a_key)
                 button_b = st.button("Selection B", key=button_b_key)
                 button_c = st.button("Selection C", key=button_c_key)
@@ -228,9 +228,9 @@ def app():
 
             # FIXME button with random int as key should not be used because it cannot trigger the condition after rerun
             elif "selection_type_2" in chat["container"]:
-                choice_1_key = "button_a" + str(selection_2_cnt)
-                choice_2_key = "button_a" + str(selection_2_cnt)
-                choice_3_key = "button_a" + str(selection_2_cnt)
+                choice_1_key = "choice_1" + str(selection_2_cnt)
+                choice_2_key = "choice_2" + str(selection_2_cnt)
+                choice_3_key = "choice_3" + str(selection_2_cnt)
                 choice_1 = st.button("Syarat Permohonan Kad Pengenalan", key=choice_1_key)
                 choice_2 = st.button("Apakah dokumen permohonan kad pengenalan", key=choice_2_key)
                 choice_3 = st.button("Bagaimana kalau kecurian kad pengenalan", key=choice_3_key)
@@ -249,7 +249,7 @@ def app():
                     st.session_state.user_input = user_response[:]
                     # generate_answer(user_response, container)
                 selection_2_cnt += 1
-                
+
             elif "document" in chat["container"]:
                 st.markdown(pdf_display, unsafe_allow_html=True)
                 # FIXME currently file downloaded is corrupted so comment out for time being
@@ -276,13 +276,20 @@ def app():
             elif "expander_with_buttons" in chat["container"]:
                 expander_with_buttons = st.expander(label="Sample Suggestion on an expander")
                 with expander_with_buttons:
+                    suggestion_1_key = "suggestion_1" + str(selection_2_cnt)
+                    suggestion_2_key = "suggestion_2" + str(selection_2_cnt)
+                    suggestion_3_key = "suggestion_3" + str(selection_2_cnt)
+                    suggestion_4_key = "suggestion_4" + str(selection_2_cnt)
+                    suggestion_5_key = "suggestion_5" + str(selection_2_cnt)
+                    suggestion_6_key = "suggestion_6" + str(selection_2_cnt)
+
                     st.write("This expander contains lots of buttons")
-                    suggestion_1 = st.button("Suggestion 1")
-                    suggestion_2 = st.button("Suggestion 2")
-                    suggestion_3 = st.button("Suggestion 3")
-                    suggestion_4 = st.button("Suggestion 4")
-                    suggestion_5 = st.button("Suggestion 5")
-                    suggestion_6 = st.button("Suggestion 6")
+                    suggestion_1 = st.button("Suggestion 1", key=suggestion_1_key)
+                    suggestion_2 = st.button("Suggestion 2", key=suggestion_2_key)
+                    suggestion_3 = st.button("Suggestion 3", key=suggestion_3_key)
+                    suggestion_4 = st.button("Suggestion 4", key=suggestion_4_key)
+                    suggestion_5 = st.button("Suggestion 5", key=suggestion_5_key)
+                    suggestion_6 = st.button("Suggestion 6", key=suggestion_6_key)
 
                     if suggestion_1:
                         st.write("You choose suggestion 1!")
