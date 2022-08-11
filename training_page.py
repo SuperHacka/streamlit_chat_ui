@@ -8,6 +8,8 @@ import streamlit as st
 from PIL import Image
 from streamlit_chat import message as st_message
 
+# TODO  refactor the code to remove all the global function
+
 example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
                 "value": ["This row contains example data", "Second row", "Third row", "Fourth row"]}
@@ -28,8 +30,7 @@ video_bytes = video_file.read()
 response = requests.get("https://catfact.ninja/docs/api-docs.json")
 
 
-# TODO  use container inside generate answer function
-# TODO  connect to api,
+# TODO  response when button click
 def generate_answer():
     user_message = st.session_state.user_input
     container = st.container()
@@ -51,13 +52,6 @@ def generate_answer():
     elif "image" in user_message:
         bot_response = "Here is the example image"
         bot_message = bot_response[:]
-        # container.image(example_image)  # will be displayed outside the chat box and disappear after widget key change
-        # st.session_state.chat_history.append(
-        #     {"message": user_message, "is_user": True, "avatar_style": "female",
-        #      "key": random.randint(0, 1000), "image": example_image})
-        # st.session_state.chat_history.append(
-        #     {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000),
-        #      "image": example_image})
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "image": example_image})
@@ -72,13 +66,9 @@ def generate_answer():
     elif "document" in user_message:
         bot_response = "Here is the pdf document"
         bot_message = bot_response[:]
-        # container.markdown(pdf_display, unsafe_allow_html=True)
-        # container.download_button(label="\U0001F4E5",
-        #                           data=PDFbyte,
-        #                           file_name="streamlit_chat_pdf.pdf",
-        #                           mime="application/x-pdf")
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
-        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+                                              "container": "document"})
 
     elif "map" in user_message:
         bot_response = "The map will be shown below"
@@ -99,15 +89,9 @@ def generate_answer():
     elif "expander" in user_message:
         bot_response = "The expander will be shown below"
         bot_message = bot_response[:]
-        expander_with_buttons = container.expander(label="Sample Suggestion on an expander")
-        with expander_with_buttons:
-            st.write("This expander contains lots of buttons")
-            st.button("Suggestion 1")
-            st.button("Suggestion 2")
-            st.button("Suggestion 3")
-            st.button("Suggestion 4")
-            st.button("Suggestion 5")
-            st.button("Suggestion 6")
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+                                              "container": "expander_with_buttons"})
 
     elif "change" in user_message:
         pass
@@ -117,9 +101,9 @@ def generate_answer():
     elif "bye" in user_message:
         bot_response = "Please leave a feedback"
         bot_message = bot_response[:]
-        # container.text_area("Feedback form")
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
-        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+                                              "container": "text_area"})
 
     elif "other" in user_message:
         bot_response = "Here are possible interactions with the bot"
@@ -139,18 +123,11 @@ def generate_answer():
     elif "form" in user_message:
         bot_response = "Here is the form provided"
         bot_message = bot_response[:]
-    #     with container.form("Chat Feedback"):
-    #         st.write("Feedback form")
-    #
-    #         question_1 = st.text_input("What are your comments about the application")
-    #         question_2 = st.text_input("Any additional feedback")
-    #
-    #         submitted = st.form_submit_button("Submit")
-    #         if submitted:
-    #             st.write("Thanks for you feedback !")
-    #     st.session_state.history.append(
-    #         {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
-    #
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+             "container": "form"})
+
     elif "api" in user_message:
         bot_response = "Example api shown below"
         bot_message = bot_response[:]
@@ -178,7 +155,7 @@ def generate_answer():
 
 def app():
     st.title("Training Page")
-    st.text("Chatbot Testing Page")
+    st.text("Chat interface using streamlit-chat testing Page")
     temp_container = st.container()
 
     if "first_time_run" not in st.session_state:
@@ -217,29 +194,76 @@ def app():
         elif "container" in chat.keys():
             st_message(**chat)
 
+            # FIXME button leading to choice does not feeds to the user_input
             if "selection_type_1" in chat["container"]:
-                st.button("Selection A")
-                st.button("Selection B")
-                st.button("Selection C")
+                button_a = st.button("Selection A")
+                button_b = st.button("Selection B")
+                button_c = st.button("Selection C")
 
+                if button_a:
+                    print("button a is selected")
+                    user_response = "I choose selection a"
+                    st.session_state.texter = user_response[:]
+
+            # FIXME button with random int as key should not be used because it cannot trigger the condition after rerun
             elif "selection_type_2" in chat["container"]:
+                print("selection_type_2 is selected")
                 choice_1 = st.button("Syarat Permohonan Kad Pengenalan", key=random.randint(0, 1000))
                 choice_2 = st.button("Apakah dokumen permohonan kad pengenalan", key=random.randint(0, 1000))
                 choice_3 = st.button("Bagaimana kalau kecurian kad pengenalan", key=random.randint(0, 1000))
 
                 if choice_1:
+                    print("choice 1 is selected")
                     user_response = "Syarat Permohonan Kad Pengenalan"
-                    st.session_state.user_input = user_response[:]
-                    # generate_answer(user_response, container)
+                    st.session_state.texter = user_response[:]
+                    # generate_answer()
+                    del st.session_state["chat_history"]
                 if choice_2:
                     user_response = "Apakah dokumen permohonan kad pengenalan"
+                    st.session_state.texter = user_response[:]
                     # generate_answer(user_response, container)
                 if choice_3:
                     user_response = "Bagaimana kalau kecurian kad pengenalan"
+                    st.session_state.texter = user_response[:]
                     # generate_answer(user_response, container)
+            elif "document" in chat["container"]:
+                st.markdown(pdf_display, unsafe_allow_html=True)
+                # FIXME currently file downloaded is corrupted so comment out for time being
+                # st.download_button(label="\U0001F4E5",
+                #                    data=PDFbyte,
+                #                    file_name="streamlit_chat_pdf.pdf",
+                #                    mime="application/x-pdf")
+            elif "form" in chat["container"]:
+                with st.form("Chat Feedback"):
+                    st.write("Feedback form")
 
+                    question_1 = st.text_input("What are your comments about the application")
+                    question_2 = st.text_input("Any additional feedback")
+
+                    submitted = st.form_submit_button("Submit")
+                    if submitted:
+                        st.write("Thanks for you feedback !")
+            elif "text_area" in chat["container"]:
+                st.text_area("Feedback form")
+
+            elif "expander_with_buttons" in chat["container"]:
+                expander_with_buttons = st.expander(label="Sample Suggestion on an expander")
+                with expander_with_buttons:
+                    st.write("This expander contains lots of buttons")
+                    st.button("Suggestion 1")
+                    st.button("Suggestion 2")
+                    st.button("Suggestion 3")
+                    st.button("Suggestion 4")
+                    st.button("Suggestion 5")
+                    st.button("Suggestion 6")
+            else:
+                st_message(message="Try again, option is not available")
         else:
             st_message(**chat)  # unpacking
+
+    ccol1, ccol2 = st.columns((0.06, 1))
+    ccol1.button(" \U0001F44D ", key=random.randint(0, 1000))
+    ccol2.button(" \U0001F44E ", key=random.randint(0, 1000))
 
     col1, col2, col3 = st.columns((0.425, 0.6, 1))
 
