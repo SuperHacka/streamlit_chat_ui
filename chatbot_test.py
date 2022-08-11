@@ -95,12 +95,14 @@ def app():
 
     st.session_state.texter = cola.text_input(label="", key="input_text",
                                               placeholder="Type something to command the chatbot"
-                                              , on_change=generate_answer)
+                                              , on_change=generate_answer,
+                                              args=(st.session_state.input_text, temp_container)
+                                              )
 
     # print(f"--> after the initialisation, {len(st.session_state.texter.strip())}")
     #
-    if st.session_state.texter is not None and len(st.session_state.texter.strip()) > 0:
-        generate_answer(st.session_state.input_text, temp_container)
+    # if st.session_state.texter is not None and len(st.session_state.texter.strip()) > 0:
+    #     generate_answer(st.session_state.input_text, temp_container)
 
     colb.markdown("##")
 

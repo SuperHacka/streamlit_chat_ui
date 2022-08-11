@@ -1,7 +1,7 @@
 streamlit~=1.11.1
 streamlit-chat
 torch
-
+requests
 transformers~=4.21.0
 numpy~=1.23.1
 pandas~=1.4.3
