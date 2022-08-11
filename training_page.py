@@ -7,7 +7,6 @@ import pandas as pd
 import requests
 import streamlit as st
 from PIL import Image
-from requests.auth import HTTPBasicAuth
 from streamlit_chat import message as st_message
 
 _ = gettext.gettext
@@ -32,8 +31,9 @@ map_df = pd.DataFrame(
 video_file = open('sample_video.mp4', 'rb')
 video_bytes = video_file.read()
 
-response = requests.get("http://192.168.12.169:6969/videos",
-                        auth=HTTPBasicAuth('shabil', 'shabiru'))
+# response = requests.get("http://192.168.12.169:6969/videos",
+#                         auth=HTTPBasicAuth('shabil', 'shabiru'))
+response = requests.get("https://catfact.ninja/fact")
 
 
 # TODO  response when button click
@@ -51,6 +51,15 @@ def generate_answer():
 
     elif "hi" in user_message:
         bot_response = "Hello there!, do you need help with anything?"
+        bot_message = bot_response[:]
+        # user_response = "Trying something out"
+        # user_message = user_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    elif "thanks" in user_message:
+        bot_response = "You're welcome, anything else I can help you with?"
         bot_message = bot_response[:]
         # user_response = "Trying something out"
         # user_message = user_response[:]
@@ -167,9 +176,11 @@ def app():
     st.title(_("Training Page"))
     st.text(_("Chat interface using streamlit-chat testing Page"))
     temp_container = st.container()
+    # counter for the key id for every widget in the application
     selection_1_cnt = 1
     selection_2_cnt = 1
     thumbs_cnt = 1
+    form_cnt = 1
 
     if "first_time_run" not in st.session_state:
         st.session_state.first_time_run = True
@@ -264,6 +275,7 @@ def app():
                 #                    file_name="streamlit_chat_pdf.pdf",
                 #                    mime="application/x-pdf")
             elif "form" in chat["container"]:
+                form_key = "form_key" + str(form_cnt)
                 with st.form("Chat Feedback"):
                     st.write("Feedback form")
 
@@ -273,6 +285,10 @@ def app():
                     submitted = st.form_submit_button("Submit")
                     if submitted:
                         st.write("Thanks for you feedback !")
+                        user_response = "Thanks"
+                        st.session_state.user_input = user_response[:]
+
+                    # form_cnt += 1
             elif "text_area" in chat["container"]:
                 st.text_area("Feedback form")
 
@@ -300,7 +316,7 @@ def app():
                     if suggestion_1:
                         st.write("You choose suggestion 1!")
                         user_response = "Suggestion 1"
-                        st.session_state.texter = user_response[:]
+                        st.session_state.user_input = user_response[:]
             else:
                 st_message(message="Try again, option is not available")
         else:

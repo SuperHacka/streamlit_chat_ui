@@ -30,10 +30,6 @@ def run():
     else:
         st.write("Bahasa")
 
-    st.write(_("chicken butt"))
-    st.markdown(_('## This app uses Zenserp API'))
-    st.markdown(_('## This tutorial is so hard to follow'))
-    st.markdown(_("This is a translatable string"))
     hide_streamlit_menu = """
     <style>
     #MainMenu {visibility: hidden;}
