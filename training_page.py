@@ -1,4 +1,5 @@
 import base64
+import gettext
 import random
 
 import numpy as np
@@ -6,7 +7,10 @@ import pandas as pd
 import requests
 import streamlit as st
 from PIL import Image
+from requests.auth import HTTPBasicAuth
 from streamlit_chat import message as st_message
+
+_ = gettext.gettext
 
 # TODO  refactor the code to remove all the global function
 
@@ -28,7 +32,8 @@ map_df = pd.DataFrame(
 video_file = open('sample_video.mp4', 'rb')
 video_bytes = video_file.read()
 
-response = requests.get("https://catfact.ninja/docs/api-docs.json")
+response = requests.get("http://192.168.12.169:6969/videos",
+                        auth=HTTPBasicAuth('shabil', 'shabiru'))
 
 
 # TODO  response when button click
@@ -159,11 +164,12 @@ def generate_answer():
 
 
 def app():
-    st.title("Training Page")
-    st.text("Chat interface using streamlit-chat testing Page")
-    # temp_container = st.container()
+    st.title(_("Training Page"))
+    st.text(_("Chat interface using streamlit-chat testing Page"))
+    temp_container = st.container()
     selection_1_cnt = 1
     selection_2_cnt = 1
+    thumbs_cnt = 1
 
     if "first_time_run" not in st.session_state:
         st.session_state.first_time_run = True
@@ -301,8 +307,30 @@ def app():
             st_message(**chat)  # unpacking
 
     ccol1, ccol2 = st.columns((0.06, 1))
-    ccol1.button(" \U0001F44D ", key=random.randint(0, 1000))
-    ccol2.button(" \U0001F44E ", key=random.randint(0, 1000))
+    thumbs_up_key = "thumbs_up" + str(thumbs_cnt)
+    thumbs_down_key = "thumbs_down" + str(thumbs_cnt)
+    thumbs_up = ccol1.button(" \U0001F44D ", key=thumbs_up_key)
+    thumbs_down = ccol2.button(" \U0001F44E ", key=thumbs_down_key)
+
+    if thumbs_up:
+        temp_container.write(message="Thanks for the feedback")
+        bot_response = "Thanks for the feedback"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+        generate_answer()
+        thumbs_cnt += 1
+        st.experimental_rerun()
+
+    if thumbs_down:
+        temp_container.write(message="Sorry to hear that, we will try to improve")
+        bot_response = "Sorry to hear that, we will try to improve"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+        generate_answer()
+        thumbs_cnt += 1
+        st.experimental_rerun()
 
     col1, col2, col3 = st.columns((0.425, 0.6, 1))
 

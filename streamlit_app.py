@@ -1,7 +1,11 @@
+import gettext
+
 import streamlit as st
 
 import chatbot_test
 import training_page
+
+_ = gettext.gettext
 
 
 def run():
@@ -19,6 +23,17 @@ def run():
     page = PAGES[selection]
     page.app()
 
+    language_settings = st.sidebar.selectbox(label="Select your preferred languages", options=("English", "Bahasa"))
+
+    if language_settings == "English":
+        st.write("English")
+    else:
+        st.write("Bahasa")
+
+    st.write(_("chicken butt"))
+    st.markdown(_('## This app uses Zenserp API'))
+    st.markdown(_('## This tutorial is so hard to follow'))
+    st.markdown(_("This is a translatable string"))
     hide_streamlit_menu = """
     <style>
     #MainMenu {visibility: hidden;}
