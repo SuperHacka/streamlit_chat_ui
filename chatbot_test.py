@@ -280,16 +280,23 @@ def generate_answer(message, container):
     # st.session_state.history.append(
     #     {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
 
+    st.session_state.history.append(
+        {"message": user_message, "is_user": True, "avatar_style": "female",
+         "key": random.randint(0, 1000), "image": example_image})
+    st.session_state.history.append(
+        {"message": bot_message, "is_user": False, "avatar_style": "personas", "key": random.randint(0, 1000)})
+
+
 # css styling for the chat interface that allow scrolling
-# chat_element_style = """
-# <style>
-# .css-12oz5g7 {
-#     flex: 1 1 0%;
-#     width: 100%;
-#     padding: 6rem 1rem 10rem;
-#     max-width: 46rem;
-#     overflow: scroll;
-# }
-# </style>
-# """
-# st.markdown(body=chat_element_style, unsafe_allow_html=True)
+chat_element_style = """
+<style>
+.css-12oz5g7 {
+    flex: 1 1 0%;
+    width: 100%;
+    padding: 6rem 1rem 10rem;
+    max-width: 46rem;
+    overflow: scroll;
+}
+</style>
+"""
+st.markdown(body=chat_element_style, unsafe_allow_html=True)

@@ -18,7 +18,8 @@ file_path = "example_pdf.pdf"
 with open(file_path, "rb") as f:
     base64_pdf = base64.b64encode(f.read()).decode('utf-8')
     PDFbyte = f.read()
-pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="250" height="200" type="application/pdf"></iframe>'
+pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="250" height="200" ' \
+              f'type="application/pdf"></iframe> '
 
 map_df = pd.DataFrame(
     np.random.randn(1000, 2) / [50, 50] + [87.76, -12.4],
@@ -33,6 +34,7 @@ response = requests.get("https://catfact.ninja/docs/api-docs.json")
 # TODO  response when button click
 def generate_answer():
     user_message = st.session_state.user_input
+    # user_message = message
     container = st.container()
     if "help" in user_message:
         bot_response = "Click on the options below"
@@ -45,6 +47,8 @@ def generate_answer():
     elif "hi" in user_message:
         bot_response = "Hello there!, do you need help with anything?"
         bot_message = bot_response[:]
+        # user_response = "Trying something out"
+        # user_message = user_response[:]
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
@@ -61,7 +65,8 @@ def generate_answer():
         bot_message = bot_response[:]
         # container.table(example_table)  # will be displayed outside the chat box
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
-        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+                                              "container": "table"})
 
     elif "document" in user_message:
         bot_response = "Here is the pdf document"
@@ -82,8 +87,8 @@ def generate_answer():
         bot_response = "The video will be shown below"
         bot_message = bot_response[:]
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
-        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000)
-                                                 , "video": map_df})
+        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+                                              "video": map_df})
 
     # Trying expander inside a container
     elif "expander" in user_message:
@@ -156,14 +161,18 @@ def generate_answer():
 def app():
     st.title("Training Page")
     st.text("Chat interface using streamlit-chat testing Page")
-    temp_container = st.container()
+    # temp_container = st.container()
+    selection_1_cnt = 1
+    selection_2_cnt = 1
 
     if "first_time_run" not in st.session_state:
         st.session_state.first_time_run = True
         st.session_state.chat_history = []
+        st.session_state.texter = None
 
     if st.session_state.first_time_run is True:
         st.session_state.first_time_run = False
+        st.session_state.chat_history = []
 
     if len(st.session_state.chat_history) == 0:
         st_message(
@@ -196,36 +205,51 @@ def app():
 
             # FIXME button leading to choice does not feeds to the user_input
             if "selection_type_1" in chat["container"]:
-                button_a = st.button("Selection A")
-                button_b = st.button("Selection B")
-                button_c = st.button("Selection C")
+                button_a_key = "button_a" + str(selection_1_cnt)
+                button_b_key = "button_a" + str(selection_1_cnt)
+                button_c_key = "button_a" + str(selection_1_cnt)
+                button_a = st.button("Selection A", key=button_a_key)
+                button_b = st.button("Selection B", key=button_b_key)
+                button_c = st.button("Selection C", key=button_c_key)
 
                 if button_a:
-                    print("button a is selected")
                     user_response = "I choose selection a"
-                    st.session_state.texter = user_response[:]
+                    st.session_state.user_input = user_response[:]
+
+                elif button_b:
+                    user_response = "I choose selection b"
+                    st.session_state.user_input = user_response[:]
+
+                elif button_c:
+                    user_response = "I choose selection c"
+                    st.session_state.user_input = user_response[:]
+
+                selection_1_cnt += 1
 
             # FIXME button with random int as key should not be used because it cannot trigger the condition after rerun
             elif "selection_type_2" in chat["container"]:
-                print("selection_type_2 is selected")
-                choice_1 = st.button("Syarat Permohonan Kad Pengenalan", key=random.randint(0, 1000))
-                choice_2 = st.button("Apakah dokumen permohonan kad pengenalan", key=random.randint(0, 1000))
-                choice_3 = st.button("Bagaimana kalau kecurian kad pengenalan", key=random.randint(0, 1000))
+                choice_1_key = "button_a" + str(selection_2_cnt)
+                choice_2_key = "button_a" + str(selection_2_cnt)
+                choice_3_key = "button_a" + str(selection_2_cnt)
+                choice_1 = st.button("Syarat Permohonan Kad Pengenalan", key=choice_1_key)
+                choice_2 = st.button("Apakah dokumen permohonan kad pengenalan", key=choice_2_key)
+                choice_3 = st.button("Bagaimana kalau kecurian kad pengenalan", key=choice_3_key)
 
                 if choice_1:
-                    print("choice 1 is selected")
-                    user_response = "Syarat Permohonan Kad Pengenalan"
-                    st.session_state.texter = user_response[:]
+                    user_response = "Syarat Permohonan Kad Pengenalan "
+                    st.session_state.user_input = user_response[:]
+                    # st.experimental_rerun()
                     # generate_answer()
-                    del st.session_state["chat_history"]
                 if choice_2:
-                    user_response = "Apakah dokumen permohonan kad pengenalan"
-                    st.session_state.texter = user_response[:]
+                    user_response = "Apakah dokumen permohonan kad pengenalan "
+                    st.session_state.user_input = user_response[:]
                     # generate_answer(user_response, container)
                 if choice_3:
-                    user_response = "Bagaimana kalau kecurian kad pengenalan"
-                    st.session_state.texter = user_response[:]
+                    user_response = "Bagaimana kalau kecurian kad pengenalan "
+                    st.session_state.user_input = user_response[:]
                     # generate_answer(user_response, container)
+                selection_2_cnt += 1
+                
             elif "document" in chat["container"]:
                 st.markdown(pdf_display, unsafe_allow_html=True)
                 # FIXME currently file downloaded is corrupted so comment out for time being
@@ -246,16 +270,24 @@ def app():
             elif "text_area" in chat["container"]:
                 st.text_area("Feedback form")
 
+            elif "table" in chat["container"]:
+                st.table(example_table)
+
             elif "expander_with_buttons" in chat["container"]:
                 expander_with_buttons = st.expander(label="Sample Suggestion on an expander")
                 with expander_with_buttons:
                     st.write("This expander contains lots of buttons")
-                    st.button("Suggestion 1")
-                    st.button("Suggestion 2")
-                    st.button("Suggestion 3")
-                    st.button("Suggestion 4")
-                    st.button("Suggestion 5")
-                    st.button("Suggestion 6")
+                    suggestion_1 = st.button("Suggestion 1")
+                    suggestion_2 = st.button("Suggestion 2")
+                    suggestion_3 = st.button("Suggestion 3")
+                    suggestion_4 = st.button("Suggestion 4")
+                    suggestion_5 = st.button("Suggestion 5")
+                    suggestion_6 = st.button("Suggestion 6")
+
+                    if suggestion_1:
+                        st.write("You choose suggestion 1!")
+                        user_response = "Suggestion 1"
+                        st.session_state.texter = user_response[:]
             else:
                 st_message(message="Try again, option is not available")
         else:
@@ -294,9 +326,10 @@ def app():
 
     colb.markdown("##")
 
-    send_message_button = colb.button(" \U0001F4AC ")
+    send_message_button = colb.button(" \U0001F4AC ", on_click=generate_answer)
     if send_message_button:
-        st.experimental_rerun()
+        pass
+        # st.experimental_rerun()
 
     colc.markdown("##")
     upload_files_button = colc.button(" \U0001F4E4 ")
@@ -304,7 +337,10 @@ def app():
         st.session_state.file_store = st.file_uploader("Upload files here")
 
     suggestion_button = st.button("Some suggestion answer")
-    # if suggestion_button:
+    if suggestion_button:
+        pass
+        # user_response = "Here is some suggestion answer"
+        # st.session_state.user_input = user_response[:]
     #     user_response = "This is the generated answer"
     #     generate_answer(user_response, temp_container)
 
@@ -313,3 +349,17 @@ if __name__ == "__main__":
     app()
     # for chat in st.session_state.chat_history:
     #     st_message(**chat)  # unpacking
+
+# css styling for the chat interface that allow scrolling
+# chat_element_style = """
+# <style>
+# .css-12oz5g7 {
+#     flex: 1 1 0%;
+#     width: 100%;
+#     padding: 6rem 1rem 10rem;
+#     max-width: 46rem;
+#     overflow: scroll;
+# }
+# </style>
+# """
+# st.markdown(body=chat_element_style, unsafe_allow_html=True)
