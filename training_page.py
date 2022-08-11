@@ -1,4 +1,5 @@
 import base64
+import csv
 import gettext
 import random
 
@@ -9,10 +10,9 @@ import streamlit as st
 from PIL import Image
 from streamlit_chat import message as st_message
 
-_ = gettext.gettext
-
 # TODO  refactor the code to remove all the global function
 
+_ = gettext.gettext
 example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
                 "value": ["This row contains example data", "Second row", "Third row", "Fourth row"]}
@@ -35,8 +35,10 @@ video_bytes = video_file.read()
 #                         auth=HTTPBasicAuth('shabil', 'shabiru'))
 response = requests.get("https://catfact.ninja/fact")
 
+file = open('sample_faq.csv')
+csvreader = csv.reader(file)
 
-# TODO  response when button click
+
 def generate_answer():
     user_message = st.session_state.user_input
     # user_message = message
@@ -243,7 +245,6 @@ def app():
 
                 selection_1_cnt += 1
 
-            # FIXME button with random int as key should not be used because it cannot trigger the condition after rerun
             elif "selection_type_2" in chat["container"]:
                 choice_1_key = "choice_1" + str(selection_2_cnt)
                 choice_2_key = "choice_2" + str(selection_2_cnt)
@@ -274,26 +275,29 @@ def app():
                 #                    data=PDFbyte,
                 #                    file_name="streamlit_chat_pdf.pdf",
                 #                    mime="application/x-pdf")
+            # TODO  disable user input whenever form is present
             elif "form" in chat["container"]:
                 form_key = "form_key" + str(form_cnt)
-                with st.form("Chat Feedback"):
-                    st.write("Feedback form")
+                with st.expander("Feedback form"):
+                    with st.form("Chat Feedback"):
+                        st.write("Feedback form")
 
-                    question_1 = st.text_input("What are your comments about the application")
-                    question_2 = st.text_input("Any additional feedback")
+                        question_1 = st.text_input("What are your comments about the application")
+                        question_2 = st.text_input("Any additional feedback")
 
-                    submitted = st.form_submit_button("Submit")
-                    if submitted:
-                        st.write("Thanks for you feedback !")
-                        user_response = "Thanks"
-                        st.session_state.user_input = user_response[:]
+                        submitted = st.form_submit_button("Submit")
+                        if submitted:
+                            st.write("Thanks for you feedback !")
+                            user_response = "Thanks"
+                            st.session_state.user_input = user_response[:]
 
                     # form_cnt += 1
             elif "text_area" in chat["container"]:
                 st.text_area("Feedback form")
 
             elif "table" in chat["container"]:
-                st.table(example_table)
+                # st.table(example_table)
+                st.dataframe(csvreader)
 
             elif "expander_with_buttons" in chat["container"]:
                 expander_with_buttons = st.expander(label="Sample Suggestion on an expander")
