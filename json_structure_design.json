@@ -1,0 +1,110 @@
+# This is the current JSON data design for the streamlit-chat web application
+{
+	 "user_message":	{
+		"//user_comment":"this is true for all user message",
+		"message": " ",
+		"is_user": true,
+		"key": "unique_identifier",
+	},
+
+	"bot_message":{
+		"//bot_comment":"this is for base bot message",
+		"message":" ",
+		"is_user": false,
+		"key": "unique_identifier",
+		"image": "image_file",
+		"video": "video_file",
+		"map": "map_dataframe",
+		"api": "api_response",
+		"link": "web_link",
+		"container": "container_type",
+	},
+
+	"image_file":{
+		"//image_comment":"Image is process to PIL object",
+		"image_directory/data":{
+			"image_name": " ",
+			"image_file_type": ".png~jpg",
+		},
+		"width": null,
+		"use_column_width":null,
+	},
+
+	"video_file":{
+		"mode":"rb",
+		"video_directory/data":{
+			"video_name": " ",
+			"video_file_type": ".mp4",
+		},
+		"format":"video/mp4",
+		"start_time": 0,
+	},
+
+	"map_dataframe":{
+		"data":[
+			{
+				"column_name":"latitude",
+				"data": "int"
+			},
+					{
+				"column_name":"longitude",
+				"data": "int"
+			}
+		],
+		"zoom":null,
+		"use_container_width":true,
+
+	},
+
+	"api_response":{
+		"web_address":"any http address",
+		"key":"unique_identifier",
+	},
+
+	"web_link":{
+		"web_address": " ",
+	},
+
+	"container_type":{
+		"form":{
+			"form_key / title":"form_unique_identifier",
+			"form_data":{
+				"text_input":" ",
+			},
+			"submit_response":{
+				"submit_data":" ",
+			}
+		},
+		"table":{
+			"faq_table":{
+				"question":" ",
+				"answer"
+			},
+			"general_table":{
+				"columns":[
+					{
+						"column_name": " ",
+						"data": [],
+
+					},
+				]
+			},
+		},
+		"text_area":{
+			"label": "",
+			"value": " ",
+			"key":"unique_identifier",
+		},
+		"document":{
+			"//document_comment":"currently using pdf file as document example",
+			"data":{
+				"src":"data_type",
+				"width": 0,
+				"height": 0,
+				"type":"data_type",
+			}
+		},
+	}
+}
+	
+

@@ -36,7 +36,7 @@ video_bytes = video_file.read()
 #                         auth=HTTPBasicAuth('shabil', 'shabiru'))
 response = requests.get("https://catfact.ninja/fact")
 
-file = open('sample_faq.csv')
+file = open('sample_faq.csv', 'r')
 csvreader = csv.reader(file)
 
 
@@ -227,7 +227,7 @@ def app():
             st_message(**chat)
             st.video(video_bytes, format="video/mp4", start_time=0)
 
-        elif "api" in chat.keys():
+        elif "api" in chat.keys():  # FIXME JSON response persist even after other function is called
             st_message(**chat)
             response_json = chat["api"].json()
             st_message(
@@ -255,7 +255,6 @@ def app():
         elif "container" in chat.keys():
             st_message(**chat)
 
-            # FIXME button leading to choice does not feeds to the user_input
             if "selection_type_1" in chat["container"]:
                 button_a_key = "button_a" + str(selection_1_cnt)
                 button_b_key = "button_b" + str(selection_1_cnt)
@@ -313,8 +312,6 @@ def app():
                 form_key = "form_key" + str(form_cnt)
                 with st.expander("Feedback form"):
                     with st.form(form_key):
-                        st.write("Feedback form")
-
                         question_1 = st.text_input("What are your comments about the application")
                         question_2 = st.text_input("Any additional feedback")
 
