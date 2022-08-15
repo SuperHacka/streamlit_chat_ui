@@ -42,8 +42,10 @@ csvreader = csv.reader(file)
 
 def generate_answer():
     user_message = st.session_state.user_input
+    st.session_state.user_chat_history.append(user_message)
     # user_message = message
     container = st.container()
+    cac_center = "cac"
     if "help" in user_message:
         bot_response = "Click on the options below"
         bot_message = bot_response[:]
@@ -167,12 +169,29 @@ def generate_answer():
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
              "link": web_link})
 
+    elif cac_center.casefold() in user_message:
+        bot_response = "May I know the city you reside in?"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "dialogue"})
+
+    elif "petaling" in st.session_state.user_chat_history[-1]:
+        bot_response = "Here are the nearest cac centre in your place..."
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "dialogue"})
+
+
     else:
         bot_response = "Sorry could not quite get the message, could you repeat that again"
         bot_message = bot_response[:]
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    print(st.session_state.user_chat_history[-1])
 
 
 def app():
@@ -207,6 +226,7 @@ def app():
     if "first_time_run" not in st.session_state:
         st.session_state.first_time_run = True
         st.session_state.chat_history = []
+        st.session_state.user_chat_history = []
         st.session_state.texter = None
 
     if st.session_state.first_time_run is True:
@@ -353,6 +373,9 @@ def app():
                         st.write("You choose suggestion 1!")
                         user_response = "Suggestion 1"
                         st.session_state.user_input = user_response[:]
+
+            elif "dialogue" in chat["container"]:
+                pass
             else:
                 st_message(message="Try again, option is not available")
         else:
@@ -366,7 +389,7 @@ def app():
 
     if thumbs_up:
         temp_container.write(message="Thanks for the feedback")
-        bot_response = "Thanks for the feedback"
+        bot_response = _("Thanks for the feedback")
         bot_message = bot_response[:]
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
@@ -374,7 +397,7 @@ def app():
         st.experimental_rerun()
 
     if thumbs_down:
-        temp_container.write(message="Sorry to hear that, we will try to improve")
+        temp_container.write(message=_("Sorry to hear that, we will try to improve"))
         bot_response = "Sorry to hear that, we will try to improve"
         bot_message = bot_response[:]
         st.session_state.chat_history.append(
@@ -403,7 +426,7 @@ def app():
 
     cola, colb, colc = st.columns((1, 0.1, 0.2))
 
-    st.session_state.texter = cola.text_input("Talk to the bot", key="user_input",
+    st.session_state.texter = cola.text_input(_("Talk to the bot"), key="user_input",
                                               on_change=generate_answer)
 
     # if st.session_state.texter is not None and len(st.session_state.texter.strip()) > 0:
@@ -419,9 +442,9 @@ def app():
     colc.markdown("##")
     upload_files_button = colc.button(" \U0001F4E4 ")
     if upload_files_button:
-        st.session_state.file_store = st.file_uploader("Upload files here")
+        st.session_state.file_store = st.file_uploader(_("Upload files here"))
 
-    suggestion_button = st.button("Some suggestion answer")
+    suggestion_button = st.button(_("Some suggestion answer"))
     if suggestion_button:
         pass
         # user_response = "Here is some suggestion answer"
