@@ -12,7 +12,7 @@ from streamlit_chat import message as st_message
 
 # TODO  refactor the code to remove all the global function
 
-_ = gettext.gettext
+# _ = gettext.gettext
 
 example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
@@ -182,8 +182,8 @@ def app():
         localizator = gettext.translation('base', localedir='locales', languages=[language_settings])
         localizator.install()
         _ = localizator.gettext
-    except:
-        pass
+    except Exception as err:
+        print(f"An error of {err} has occur")
 
     st.title(_("Training Page"))
     program_title = st.text(_("Chat interface using streamlit-chat testing Page"))
@@ -229,8 +229,21 @@ def app():
 
         elif "api" in chat.keys():
             st_message(**chat)
-            st.write("The status for the API is: " + str(chat["api"].status_code))
-
+            response_json = chat["api"].json()
+            st_message(
+                message=_(response_json["fact"]), key=random.randint(0, 1000))
+            # st.session_state.chat_history.append(
+            #     {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+            # st.write("The status for the API is: " + str(chat["api"].status_code))
+            # if chat["api"].status_code == 200:
+            #     # st.write("The API request is successful")
+            #     response_json = chat["api"].json()
+            #     bot_response = str(response_json["fact"])
+            #     bot_message = bot_response[:]
+            #     st.session_state.chat_history.append(
+            #         {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+            # else:
+            #     st.write("There is something wrong with the request")
         elif "link" in chat.keys():
             st_message(**chat)
             st.write(chat["link"])
@@ -369,7 +382,6 @@ def app():
         bot_message = bot_response[:]
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
-        generate_answer()
         thumbs_cnt += 1
         st.experimental_rerun()
 
