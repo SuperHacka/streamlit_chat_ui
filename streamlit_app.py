@@ -23,13 +23,6 @@ def run():
     page = PAGES[selection]
     page.app()
 
-    language_settings = st.sidebar.selectbox(label="Select your preferred languages", options=("English", "Bahasa"))
-
-    if language_settings == "English":
-        st.write("English")
-    else:
-        st.write("Bahasa")
-
     hide_streamlit_menu = """
     <style>
     #MainMenu {visibility: hidden;}

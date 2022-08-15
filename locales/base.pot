@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-08-11 16:51+0800\n"
+"POT-Creation-Date: 2022-08-15 10:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,4 +14,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
+
+#: training_page.py:188
+msgid "Training Page"
+msgstr ""
+
+#: training_page.py:189
+msgid "Chat interface using streamlit-chat testing Page"
+msgstr ""
+
+#: training_page.py:218
+msgid "Hello there welcome to the chatbot interface testing, Please type something to continue"
+msgstr ""
+
+#: training_page.py:378
+msgid "Display URL"
+msgstr ""
+
+#: training_page.py:380
+msgid "Display Image"
+msgstr ""
 

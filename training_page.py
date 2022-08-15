@@ -13,6 +13,7 @@ from streamlit_chat import message as st_message
 # TODO  refactor the code to remove all the global function
 
 _ = gettext.gettext
+
 example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
                 "value": ["This row contains example data", "Second row", "Third row", "Fourth row"]}
@@ -175,8 +176,27 @@ def generate_answer():
 
 
 def app():
+    language_settings = st.sidebar.selectbox(label="Select your preferred languages", options=("en", "my"))
+
+    try:
+        localizator = gettext.translation('base', localedir='locales', languages=[language_settings])
+        localizator.install()
+        _ = localizator.gettext
+    except:
+        pass
+
     st.title(_("Training Page"))
-    st.text(_("Chat interface using streamlit-chat testing Page"))
+    program_title = st.text(_("Chat interface using streamlit-chat testing Page"))
+
+    # if language_settings == "en":
+    #     st.write("English language")
+    #     eng_lang = gettext.translation('base', localedir='locales', languages=[language_settings])
+    #     eng_lang.install()
+    # else:
+    #     st.write("Malay language")
+    #     my_lang = gettext.translation('base', localedir='locales', languages=[language_settings])
+    #     my_lang.install()
+
     temp_container = st.container()
     # counter for the key id for every widget in the application
     selection_1_cnt = 1
@@ -195,7 +215,7 @@ def app():
 
     if len(st.session_state.chat_history) == 0:
         st_message(
-            message="Hello there welcome to the chatbot interface testing, Please type something to continue")
+            message=_("Hello there welcome to the chatbot interface testing, Please type something to continue"))
 
     for chat in st.session_state.chat_history:
         if "image" in chat.keys():
@@ -279,7 +299,7 @@ def app():
             elif "form" in chat["container"]:
                 form_key = "form_key" + str(form_cnt)
                 with st.expander("Feedback form"):
-                    with st.form("Chat Feedback"):
+                    with st.form(form_key):
                         st.write("Feedback form")
 
                         question_1 = st.text_input("What are your comments about the application")
@@ -288,10 +308,12 @@ def app():
                         submitted = st.form_submit_button("Submit")
                         if submitted:
                             st.write("Thanks for you feedback !")
-                            user_response = "Thanks"
-                            st.session_state.user_input = user_response[:]
+                            bot_response = "Your feedback will be reflected on our next interaction!"
+                            bot_message = bot_response[:]
+                            st.session_state.chat_history.append(
+                                {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
 
-                    # form_cnt += 1
+                    form_cnt += 1
             elif "text_area" in chat["container"]:
                 st.text_area("Feedback form")
 
@@ -338,7 +360,6 @@ def app():
         bot_message = bot_response[:]
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
-        generate_answer()
         thumbs_cnt += 1
         st.experimental_rerun()
 
@@ -354,10 +375,10 @@ def app():
 
     col1, col2, col3 = st.columns((0.425, 0.6, 1))
 
-    url_button = col1.button(
-        "Display URL")
-    image_button = col2.button(
-        "Display Image")
+    url_button = col1.button(_(
+        "Display URL"))
+    image_button = col2.button(_(
+        "Display Image"))
 
     # if url_button:
     #     st_message("Please click the link below ")
