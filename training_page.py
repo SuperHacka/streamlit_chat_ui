@@ -315,7 +315,7 @@ def app():
             st_message(**chat)
             response_json = chat["api"].json()
             st_message(
-                message=_(response_json["fact"]), key=random.randint(0, 1000))
+                message=response_json["fact"], key=random.randint(0, 1000))
             # st.session_state.chat_history.append(
             #     {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
             # st.write("The status for the API is: " + str(chat["api"].status_code))
