@@ -2,6 +2,7 @@ import base64
 import csv
 import gettext
 import random
+import re
 
 import numpy as np
 import pandas as pd
@@ -9,10 +10,10 @@ import requests
 import streamlit as st
 from PIL import Image
 from streamlit_chat import message as st_message
+# _ = gettext.gettext
+from strsimpy import Levenshtein, NormalizedLevenshtein
 
 # TODO  refactor the code to remove all the global function
-
-# _ = gettext.gettext
 
 example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
@@ -40,12 +41,23 @@ file = open('sample_faq.csv', 'r')
 csvreader = csv.reader(file)
 
 
+def intent_guesser(user_input):
+    booking_intent = "book"
+    if user_input in booking_intent:
+        pass
+
+
 def generate_answer():
     user_message = st.session_state.user_input
     st.session_state.user_chat_history.append(user_message)
+    phone_pattern = r"\d{3}-\d{7}"
+    city_list = ["petaling", "kuala", "kelana"]
     # user_message = message
     container = st.container()
-    cac_center = "cac"
+    levenshtein = Levenshtein()
+    normalized_levenshtein = NormalizedLevenshtein()
+    print(levenshtein.distance(city_list, user_message))
+
     if "help" in user_message:
         bot_response = "Click on the options below"
         bot_message = bot_response[:]
@@ -169,29 +181,64 @@ def generate_answer():
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
              "link": web_link})
 
-    elif cac_center.casefold() in user_message:
+    elif "cac" in user_message:
         bot_response = "May I know the city you reside in?"
         bot_message = bot_response[:]
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "dialogue"})
 
-    elif "petaling" in st.session_state.user_chat_history[-1]:
+    elif user_message in city_list:
         bot_response = "Here are the nearest cac centre in your place..."
         bot_message = bot_response[:]
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "dialogue"})
 
-
-    else:
-        bot_response = "Sorry could not quite get the message, could you repeat that again"
+    elif "name" in user_message:
+        bot_response = "What is your phone number?"
         bot_message = bot_response[:]
         st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
 
-    print(st.session_state.user_chat_history[-1])
+    elif bool(re.search(phone_pattern, user_message)):
+        bot_response = "What is your preferred location?"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    elif "cancel" in user_message:
+        bot_response = "You sure you want to cancel the appointment?"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    elif "appointment" in user_message:
+        bot_response = "Please provide us some of information. What is your name?"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    elif "text" in user_message:
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": "What text do you want to send?", "is_user": False, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": "and who will I send it to?", "is_user": False, "key": random.randint(0, 1000)})
+         
+    else:
+        bot_response = "Sorry could not understand the message, could you repeat that again"
+        bot_message = bot_response[:]
+        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000)})
+
+    print(st.session_state.user_chat_history[-1])  # TODO find out how to create a subsequent to the if cond rule for
+    # the dialogue
 
 
 def app():
@@ -327,7 +374,7 @@ def app():
                 #                    data=PDFbyte,
                 #                    file_name="streamlit_chat_pdf.pdf",
                 #                    mime="application/x-pdf")
-            # TODO  disable user input whenever form is present
+            # TODO  disable chat input whenever form is present
             elif "form" in chat["container"]:
                 form_key = "form_key" + str(form_cnt)
                 with st.expander("Feedback form"):
