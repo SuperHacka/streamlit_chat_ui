@@ -19,12 +19,16 @@ example_image = Image.open("01.png")
 example_dict = {"id": [1, 2, 3, 4],
                 "value": ["This row contains example data", "Second row", "Third row", "Fourth row"]}
 example_table = pd.DataFrame(example_dict)
-file_path = "example_pdf.pdf"
-with open(file_path, "rb") as f:
-    base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-    PDFbyte = f.read()
+pdf_file_path = "example_pdf.pdf"
+with open(pdf_file_path, "rb") as pdf:
+    base64_pdf = base64.b64encode(pdf.read()).decode('utf-8')
+    PDFbyte = pdf.read()
 pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="250" height="200" ' \
               f'type="application/pdf"></iframe> '
+
+text_file_path = "clinic_list.txt"
+with open(text_file_path, "r") as text:
+    text_file = text.readlines()
 
 map_df = pd.DataFrame(
     np.random.randn(1000, 2) / [50, 50] + [87.76, -12.4],
@@ -54,9 +58,13 @@ def generate_answer():
     city_list = ["petaling", "kuala", "kelana"]
     # user_message = message
     container = st.container()
+
+    # Testing out string comparison using levenshtein distance
     levenshtein = Levenshtein()
     normalized_levenshtein = NormalizedLevenshtein()
-    print(levenshtein.distance(city_list, user_message))
+    # print(levenshtein.distance(city_list, user_message))
+    [print(f"the value of string distance is {levenshtein.distance(x, user_message)}") for x in
+     city_list if levenshtein.distance(x, user_message) < 4]
 
     if "help" in user_message:
         bot_response = "Click on the options below"
@@ -137,63 +145,71 @@ def generate_answer():
     elif "bye" in user_message:
         bot_response = "Please leave a feedback"
         bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
-        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+        st.session_state.chat_history.append(
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append({"message": bot_message, "is_user": False, "key": random.randint(0, 10000),
                                               "container": "text_area"})
 
     elif "other" in user_message:
         bot_response = "Here are possible interactions with the bot"
         bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "selection_type_1"})
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 10000),
+             "container": "selection_type_1"})
 
     elif "pengenalan" in user_message:
         bot_response = "Soalan berkaitan"
         bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 10000),
              "container": "selection_type_2"})
 
     elif "form" in user_message:
         bot_response = "Here is the form provided"
         bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 10000),
              "container": "form"})
 
     elif "api" in user_message:
         bot_response = "Example api shown below"
         bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "api": response})
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 10000), "api": response})
 
     elif "link" in user_message:
         bot_response = "Please click the link below "
         bot_message = bot_response[:]
 
         web_link = "check this out [link](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley)"
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000),
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 10000),
              "link": web_link})
 
     elif "cac" in user_message:
         bot_response = "May I know the city you reside in?"
         bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "dialogue"})
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": bot_message, "is_user": False, "key": random.randint(0, 10000), "container": "dialogue"})
 
     elif user_message in city_list:
-        bot_response = "Here are the nearest cac centre in your place..."
-        bot_message = bot_response[:]
-        st.session_state.chat_history.append({"message": user_message, "is_user": True, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
-            {"message": bot_message, "is_user": False, "key": random.randint(0, 1000), "container": "dialogue"})
+            {"message": user_message, "is_user": True, "key": random.randint(0, 10000)})
+        st.session_state.chat_history.append(
+            {"message": "Great at which PPV centre do you want to take the vaccination?", "is_user": False,
+             "key": random.randint(0, 10000), "container": "appointment_location"})
 
     elif "name" in user_message:
         bot_response = "What is your phone number?"
@@ -229,7 +245,7 @@ def generate_answer():
             {"message": "What text do you want to send?", "is_user": False, "key": random.randint(0, 1000)})
         st.session_state.chat_history.append(
             {"message": "and who will I send it to?", "is_user": False, "key": random.randint(0, 1000)})
-         
+
     else:
         bot_response = "Sorry could not understand the message, could you repeat that again"
         bot_message = bot_response[:]
@@ -267,6 +283,7 @@ def app():
     # counter for the key id for every widget in the application
     selection_1_cnt = 1
     selection_2_cnt = 1
+    selection_3_cnt = 1
     thumbs_cnt = 1
     form_cnt = 1
 
@@ -420,6 +437,24 @@ def app():
                         st.write("You choose suggestion 1!")
                         user_response = "Suggestion 1"
                         st.session_state.user_input = user_response[:]
+                    selection_2_cnt += 1
+
+            elif "appointment_location" in chat["container"]:
+                st_message(message="Select from one of the PPV location below", key=random.randint(0, 10000))
+                location_1_key = "location_1" + str(selection_3_cnt)
+                location_2_key = "location_2" + str(selection_3_cnt)
+                location_3_key = "location_3" + str(selection_3_cnt)
+
+                choice_1 = st.button("BP SPECIALIST MEGAH", key=location_1_key)
+                choice_2 = st.button("KLINIK LOH", key=location_2_key)
+                choice_3 = st.button("KLINIK FAMILY TTDI", key=location_3_key)
+
+                if choice_1 or choice_2 or choice_3:
+                    st_message(message="Your appointment is booked", key=random.randint(0, 10000))
+                    # st.session_state.chat_history.append(
+                    #     {"message": "Your appointment is booked", "is_user": False, "key": random.randint(0, 1000)})
+
+                selection_3_cnt += 1
 
             elif "dialogue" in chat["container"]:
                 pass
